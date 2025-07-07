@@ -6,6 +6,7 @@ import type { CharacterType } from './character.model';
 export const characterStore = createStore({
   context: {
     characters: [] as (CharacterType & { deleted?: boolean; })[],
+    excludedCharacterIds: [] as string[],
   },
 
   on: {
@@ -17,6 +18,7 @@ export const characterStore = createStore({
     },
 
     markDeleted: (context, event: { id: string; }) => {
+      console.log('markDeleted', event.id);
       return produce(context, draft => {
         const character = draft.characters.find(c => c.id === event.id);
 
@@ -27,6 +29,7 @@ export const characterStore = createStore({
     },
 
     delete: (context, event: { id: string; }) => {
+      console.log('delete', event.id);
       return {
         ...context,
         characters: context.characters.filter(c => c.id !== event.id),
@@ -34,6 +37,7 @@ export const characterStore = createStore({
     },
 
     markUndelete: (context, event: { id: string; }) => {
+      console.log('markUndelete', event.id);
       return produce(context, draft => {
         const character = draft.characters.find(c => c.id === event.id);
 
@@ -56,6 +60,15 @@ export const characterStore = createStore({
         characters: context.characters.map(c => {
           return c.id === character.id ? character : c;
         }),
+      };
+    },
+
+    toggleCharactedExclusion: (context, event: { id: string; }) => {
+      return {
+        ...context,
+        excludedCharacterIds: context.excludedCharacterIds.includes(event.id)
+          ? context.excludedCharacterIds.filter(id => id !== event.id)
+          : [...context.excludedCharacterIds, event.id],
       };
     },
   },

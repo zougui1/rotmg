@@ -16,7 +16,7 @@ export const PotionList = ({ characters }: PotionListProps) => {
           <div
             key={statName}
             className={cn(
-              'flex items-center gap-2',
+              'flex items-center gap-2 w-12',
               potionCount <= 0 && 'opacity-50',
             )}
           >

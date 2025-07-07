@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { Copy, Trash2 } from 'lucide-react';
+import { useSelector } from '@xstate/store/react';
 import { type PartialDeep } from 'type-fest';
 
 import { Checkbox } from '~/components/ui/Checkbox';
@@ -23,6 +24,7 @@ export const CharacterSummary = ({ character }: CharacterSummaryProps) => {
     onError: () => characterStore.trigger.markUndelete(character),
   });
   const update = api.character.update.useMutation();
+  const isExcluded = useSelector(characterStore, state => state.context.excludedCharacterIds.includes(character.id));
 
   const updateCharacter = async (data: PartialDeep<CharacterType>) => {
     const newCharacter = {
@@ -57,7 +59,10 @@ export const CharacterSummary = ({ character }: CharacterSummaryProps) => {
     <div className="flex flex-col gap-2 bg-card text-card-foreground p-2 max-w-[530px]">
       <div className="flex gap-3">
         <div className="flex flex-col items-center gap-2">
-          <Checkbox />
+          <Checkbox
+            checked={!isExcluded}
+            onCheckedChange={() => characterStore.trigger.toggleCharactedExclusion(character)}
+          />
 
           <Button
             icon

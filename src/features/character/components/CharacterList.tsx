@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useSelector } from '@xstate/store/react';
 
 import { api } from '~/trpc/react';
@@ -9,6 +9,7 @@ import { CharacterSummary } from './CharacterSummary';
 import { characterStore } from '../character.store';
 
 export const CharacterList = () => {
+  const mounted = useRef(false);
   const [serverCharacters] = api.character.getAll.useSuspenseQuery(undefined, {
     refetchInterval: 0,
     refetchOnMount: false,
@@ -17,11 +18,12 @@ export const CharacterList = () => {
   });
   const clientCharacters = useSelector(characterStore, state => state.context.characters);
 
-  const characters = clientCharacters.length
+  const characters = mounted.current
     ? clientCharacters
     : serverCharacters;
 
   useEffect(() => {
+    mounted.current = true;
     characterStore.trigger.init({ characters: serverCharacters });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
