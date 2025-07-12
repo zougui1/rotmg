@@ -1,5 +1,6 @@
 import { exaltationRouter } from '~/features/exaltation/exaltation.router';
 import { characterRouter } from '~/features/character/character.router';
+import { hoardRouter } from '~/features/hoard/hoard.router';
 
 import { createCallerFactory, createTRPCRouter } from './trpc';
 
@@ -11,6 +12,7 @@ import { createCallerFactory, createTRPCRouter } from './trpc';
 export const appRouter = createTRPCRouter({
   exaltation: exaltationRouter,
   character: characterRouter,
+  hoard: hoardRouter,
 });
 
 // export type definition of API

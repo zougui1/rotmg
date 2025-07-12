@@ -28,3 +28,5 @@ export const Checkbox = ({ className, ...props }: CheckboxProps) => {
 export interface CheckboxProps extends React.ComponentProps<typeof CheckboxPrimitive.Root> {
 
 }
+
+export type CheckedState = CheckboxPrimitive.CheckedState;

@@ -35,7 +35,7 @@ export const ClassList = ({ characters }: ClassListProps) => {
     characterStore.trigger.create({ character });
 
     try {
-      creation.mutate(character);
+      await creation.mutateAsync(character);
     } catch {
       characterStore.trigger.delete({ id });
     }

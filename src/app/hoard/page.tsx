@@ -1,4 +1,7 @@
 import { cookies } from 'next/headers';
+
+import { HoardSectionList } from '~/features/hoard/components/HoardSectionList';
+import { HoardSidePanel } from '~/features/hoard/components/HoardSidePanel';
 import { HydrateClient } from '~/trpc/server';
 
 export default async function Home() {
@@ -6,7 +9,12 @@ export default async function Home() {
 
   return (
     <HydrateClient>
-      <main></main>
+      <div className="flex justify-between gap-4">
+        <HoardSectionList />
+        <div>
+          <HoardSidePanel />
+        </div>
+      </div>
     </HydrateClient>
   );
 }

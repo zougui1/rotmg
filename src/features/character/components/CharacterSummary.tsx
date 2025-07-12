@@ -98,7 +98,7 @@ export const CharacterSummary = ({ character }: CharacterSummaryProps) => {
             height={36}
           />
 
-          <span className="text-md text-center font-bold text-shadow-contract">
+          <span className="text-md text-center font-bold text-shadow-contrast">
             {character.class}
           </span>
         </div>

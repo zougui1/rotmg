@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useRef } from 'react';
 import Image from 'next/image';
 
@@ -32,6 +34,7 @@ export const StatInput = ({ statName, value: valueProps, onValueChange }: StatIn
       className={cn('w-[8ch] px-1', value <= 0 && 'opacity-50')}
       onValueChange={handleValueChange}
       onBlur={() => setAuto(true)}
+      onFocus={e => e.currentTarget.select()}
       startContent={(
         <Button
           icon

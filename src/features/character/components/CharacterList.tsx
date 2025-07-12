@@ -29,7 +29,7 @@ export const CharacterList = () => {
   }, []);
 
   return (
-    <div className="flex flex-col gap-4 mx-auto">
+    <div className="flex flex-col gap-4">
       {characters.map(character => (
         <CharacterSummary key={character.id} character={character} />
       ))}

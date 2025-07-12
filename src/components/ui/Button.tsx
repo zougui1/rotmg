@@ -36,9 +36,8 @@ export const buttonStyles = tv({
     'shrink-0',
     '[&_svg]:shrink-0',
 
-    'outline-none',
-
-    'focus-visible:ring-[3px]',
+    'focus-visible:outline-solid',
+    'focus-visible:outline focus-visible:outline-ring focus-visible:outline-2 focus-visible:outline-offset-2',
 
     'aria-invalid:ring-destructive/20',
     'aria-invalid:border-destructive',
@@ -48,13 +47,15 @@ export const buttonStyles = tv({
   ],
   variants: {
     variant: {
-      solid: 'focus-visible:border-ring',
-      outline: 'border-[2px]',
-      flat: 'focus-visible:border-ring',
+      //solid: 'focus-visible:border-ring',
+      solid: 'shadow-xs',
+      outline: 'shadow-xs',
+      //flat: 'focus-visible:border-ring',
+      flat: '',
     },
 
     color: {
-      primary: 'focus-visible:ring-ring/50',
+      primary: 'focus-visible:ring-ring/80',
       secondary: 'focus-visible:ring-secondary/50',
       success: 'focus-visible:ring-success/50',
       warning: 'focus-visible:ring-warning/50',
@@ -156,9 +157,8 @@ export const buttonStyles = tv({
       variant: 'outline',
       color: 'primary',
       class: [
-        'border-white text-white',
-        'hover:border-white/90 hover:text-white/90',
-        'hover:bg-white/30',
+        'border border-input bg-input/30 text-white',
+        'hover:bg-input/50',
       ],
     },
     {
@@ -254,16 +254,18 @@ export const Button = ({
   disabled,
   loading,
   children,
+  as,
   ...props
 }: ButtonProps) => {
   const ripple = useRipple();
-  const Comp = asChild ? Slot : 'button';
+  const Comp = as ?? (asChild ? Slot : 'button');
 
   return (
     <Comp
       data-slot="button"
       className={buttonStyles({ variant, color, size, icon, className })}
       onClick={chainHandlers(onClick, !disableRipple && ripple.onClick)}
+      // @ts-expect-error disabled might not exist in the component passed by props
       disabled={disabled ?? loading}
       {...props}
     >
@@ -277,4 +279,5 @@ export interface ButtonProps extends Omit<React.ComponentProps<'button'>, 'color
   asChild?: boolean;
   disableRipple?: boolean;
   loading?: boolean;
+  as?: string;
 }

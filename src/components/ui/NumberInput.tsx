@@ -9,6 +9,7 @@ export const NumberInput = ({
   className,
   startContent,
   onBlur,
+  onFocus,
   ref,
   ...props
 }: NumberInputProps) => {
@@ -31,6 +32,7 @@ export const NumberInput = ({
             ref={ref}
             className="w-full placeholder:text-muted-foreground outline-none"
             onBlur={onBlur}
+            onFocus={onFocus}
           />
         </div>
 
@@ -48,7 +50,9 @@ export const NumberInput = ({
   );
 }
 
-export interface NumberInputProps extends Omit<React.ComponentProps<typeof NumberField.Root>, 'ref'> {
+export interface NumberInputProps extends Omit<React.ComponentProps<typeof NumberField.Root>, 'ref' | 'onBlur' | 'onFocus'> {
   ref?: React.Ref<React.ComponentRef<typeof NumberField.Input>>;
   startContent?: React.ReactNode;
+  onBlur?: React.ComponentProps<typeof NumberField.Input>['onBlur'];
+  onFocus?: React.ComponentProps<typeof NumberField.Input>['onFocus'];
 }

@@ -34,6 +34,7 @@ export default tseslint.config(
         { checksVoidReturn: { attributes: false } },
       ],
       '@typescript-eslint/no-empty-object-type': 'off',
+      'react/no-children-prop': 'off',
     },
   },
   {
