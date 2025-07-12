@@ -1,6 +1,8 @@
+import { memo } from 'react';
+
 import { cn } from '~/utils';
 
-export const VaultSlot = ({ children, className, classes, ...props }: VaultSlotProps) => {
+export const VaultSlot = memo(function VaultSlot({ children, className, classes, ...props }: VaultSlotProps) {
   return (
     <div
       className={cn(
@@ -22,7 +24,7 @@ export const VaultSlot = ({ children, className, classes, ...props }: VaultSlotP
       </div>
     </div>
   );
-}
+});
 
 export interface VaultSlotProps extends React.ComponentProps<'div'> {
   classes?: Partial<Record<'wrapper', string>>;

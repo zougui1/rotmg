@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { memo, useEffect, useRef, useCallback } from 'react';
 import { useSelector } from '@xstate/store/react';
 import Image from 'next/image';
 import { Plus } from 'lucide-react';
@@ -21,11 +21,16 @@ import { CreateHoardSequenceDialog } from './CreateHoardSequenceDialog';
 import { hoardStore } from '../hoard.store';
 import { useHoardFilters } from '../hooks';
 import { getHoardStats } from '../utils';
-import type { FullSection } from '../hoard.router';
 import type { FullHoardSlot } from '../hoardSequence.model';
 
-const HoardSectionSummary = ({ section }: HoardSectionSummaryProps) => {
+const HoardSectionSummary = ({ sectionId }: HoardSectionSummaryProps) => {
+  const section = useSelector(hoardStore, state => state.context.maps.sections[sectionId]);
   const sequenceCreationDialog = useDialog();
+
+  if(!section) {
+    return null;
+  }
+
   const stats = getHoardStats([section]);
 
   return (
@@ -118,23 +123,24 @@ const HoardSectionSummary = ({ section }: HoardSectionSummaryProps) => {
 }
 
 interface HoardSectionSummaryProps {
-  section: FullSection;
+  sectionId: string;
 }
 
-const HoardSectionItem = ({ section }: HoardSectionItemProps) => {
-  const updateSlotMutation = api.hoard.updateSlot.useMutation();
+const HoardSectionItem = memo(function HoardSectionItem({ sectionId }: HoardSectionItemProps) {
+  const { mutateAsync: mutatateSlot } = api.hoard.updateSlot.useMutation();
+  const section = useSelector(hoardStore, state => state.context.maps.sections[sectionId]);
 
-  const updateSlot = async (slot: FullHoardSlot, newSlot: FullHoardSlot) => {
-    hoardStore.trigger.updateSlot({ sectionId: section.id, slot: newSlot });
+  const updateSlot = useCallback(async (slot: FullHoardSlot, newSlot: FullHoardSlot) => {
+    hoardStore.trigger.updateSlot({ sectionId, slot: newSlot });
 
     try {
-      await updateSlotMutation.mutateAsync({ slot: newSlot });
+      await mutatateSlot({ slot: newSlot });
     } catch {
-      hoardStore.trigger.updateSlot({ sectionId: section.id, slot });
+      hoardStore.trigger.updateSlot({ sectionId, slot });
     }
-  }
+  }, [sectionId, mutatateSlot]);
 
-  const onSlotClick = async (slot: FullHoardSlot | undefined) => {
+  const onSlotClick = useCallback(async (slot: FullHoardSlot | undefined) => {
     if (!slot) {
       return;
     }
@@ -148,9 +154,9 @@ const HoardSectionItem = ({ section }: HoardSectionItemProps) => {
     }
 
     await updateSlot(slot, newSlot);
-  }
+  }, [updateSlot]);
 
-  const onDeleteSlot = async (slot: FullHoardSlot) => {
+  const onDeleteSlot = useCallback(async (slot: FullHoardSlot) => {
     const newSlot = {
       ...slot,
       count: 0,
@@ -161,11 +167,15 @@ const HoardSectionItem = ({ section }: HoardSectionItemProps) => {
     }
 
     await updateSlot(slot, newSlot);
+  }, [updateSlot]);
+
+  if (!section) {
+    return null;
   }
 
   return (
     <Accordion.Item value={section.name}>
-      <HoardSectionSummary section={section} />
+      <HoardSectionSummary sectionId={sectionId} />
 
       <Accordion.Content>
         <div
@@ -189,7 +199,7 @@ const HoardSectionItem = ({ section }: HoardSectionItemProps) => {
           {sort(section.sequences, s => s.position).map(sequence => (
             <HoardSequence
               key={sequence.id}
-              sequence={sequence}
+              sequenceId={sequence.id}
               onSlotClick={onSlotClick}
               onDeleteSlot={onDeleteSlot}
             />
@@ -198,10 +208,10 @@ const HoardSectionItem = ({ section }: HoardSectionItemProps) => {
       </Accordion.Content>
     </Accordion.Item>
   );
-}
+});
 
 interface HoardSectionItemProps {
-  section: FullSection;
+  sectionId: string;
 }
 
 const useSections = () => {
@@ -291,7 +301,7 @@ export const HoardSectionList = () => {
         className="relative"
       >
         {sort(sections, s => s.position).map(section => (
-          <HoardSectionItem key={section.id} section={section} />
+          <HoardSectionItem key={section.id} sectionId={section.id} />
         ))}
       </Accordion.Root>
     </div>
