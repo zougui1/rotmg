@@ -285,7 +285,7 @@ export const HoardSectionList = () => {
       <Accordion.Root
         type="multiple"
         value={openSection ? [openSection] : []}
-        onValueChange={([value]) => setOpenSection(value ?? null)}
+        onValueChange={values => setOpenSection(values.at(-1) ?? null)}
       >
         {sort(sections, s => s.position).map(section => (
           <HoardSectionItem key={section.id} section={section} />
