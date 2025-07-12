@@ -143,7 +143,7 @@ export const HoardSequenceFormDialog = ({
         <Dialog.Trigger asChild>{children}</Dialog.Trigger>
       )}
 
-      <Dialog.Content className="!max-w-none w-auto">
+      <Dialog.Content className="!max-w-none w-auto" onFocus={() => console.log('dialog focus')}>
         <Dialog.Header>
           <Dialog.Title>{title}</Dialog.Title>
           <Dialog.Description>{description}</Dialog.Description>
@@ -195,7 +195,7 @@ export const HoardSequenceFormDialog = ({
           </Dialog.Close>
 
           <Dialog.Close asChild>
-            <Button disabled={!sequence} onClick={handleSubmit}>
+            <Button disabled={!sequence} onClick={handleSubmit} autoFocus>
               Submit
             </Button>
           </Dialog.Close>

@@ -143,10 +143,10 @@ const HoardSectionItem = ({ section }: HoardSectionItemProps) => {
 
     const newSlot = { ...slot };
 
-    if (newSlot.count > 0) {
+    if (slot.item.enchantable && newSlot.count > 0) {
       newSlot.enchantSlots = ((newSlot.enchantSlots ?? 0) + 1) % 5;
     } else {
-      newSlot.count++;
+      newSlot.count = newSlot.count > 0 ? 0 : 1;
     }
 
     await updateSlot(slot, newSlot);
