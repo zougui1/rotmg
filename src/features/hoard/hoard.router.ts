@@ -53,6 +53,7 @@ export const hoardRouter = createTRPCRouter({
                 type: { $first: '$type' },
                 section: { $first: '$section' },
                 slots: { $push: '$slots' },
+                position: { $first: '$position' },
               },
             },
           ],
