@@ -185,7 +185,7 @@ const HoardSectionItem = ({ section }: HoardSectionItemProps) => {
             </CreateHoardSequenceDialog>
           )}
 
-          {sort(section.sequences, s => s.position, true).map(sequence => (
+          {sort(section.sequences, s => s.position).map(sequence => (
             <HoardSequence
               key={sequence.id}
               sequence={sequence}
@@ -287,7 +287,7 @@ export const HoardSectionList = () => {
         value={openSection ? [openSection] : []}
         onValueChange={([value]) => setOpenSection(value ?? null)}
       >
-        {sort(sections, s => s.position, true).map(section => (
+        {sort(sections, s => s.position).map(section => (
           <HoardSectionItem key={section.id} section={section} />
         ))}
       </Accordion.Root>
