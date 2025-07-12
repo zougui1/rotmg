@@ -13,6 +13,7 @@ import { VaultSlot } from './VaultSlot';
 import { EnchantSlot } from './EnchantSlot';
 import { hoardStore } from '../hoard.store';
 import type { FullHoardSlot } from '../hoardSequence.model';
+import type { HoardSequenceType } from '../enums';
 
 const enchantSlots: Record<number, React.ReactNode> = {
   1: <EnchantSlot className="bg-green-600" />,
@@ -39,18 +40,24 @@ const enchantSlots: Record<number, React.ReactNode> = {
   ),
 };
 
-export const HoardSlot = memo(function HoardSlot({ slotId, sequenceId, onSlotClick, onCountChange, onDeleteSlot, index }: HoardSlotProps) {
-  const sequence = useSelector(hoardStore, state => state.context.maps.sequences[sequenceId]);
-  const slot = useSelector(hoardStore, state => state.context.maps.slots[slotId]);
+export const HoardSlot = memo(function HoardSlot({
+  slotId,
+  slot: slotProps,
+  type,
+  onSlotClick,
+  onCountChange,
+  onDeleteSlot,
+  index,
+}: HoardSlotProps) {
+  const slotStore = useSelector(hoardStore, state => state.context.maps.slots[slotId]);
+  const slot = slotProps ?? slotStore;
 
-  console.log('HoardSlot');
-
-  if (!sequence || !slot) {
+  if (!slot) {
     return null;
   }
 
-  const isNumbered = sequence.type === 'Numbered';
-  const isInfinite = sequence.type === 'Infinite';
+  const isNumbered = type === 'Numbered';
+  const isInfinite = type === 'Infinite';
 
   const handleDeleteSlot = (event: React.MouseEvent) => {
     event.stopPropagation();
@@ -184,8 +191,9 @@ export const HoardSlot = memo(function HoardSlot({ slotId, sequenceId, onSlotCli
 });
 
 export interface HoardSlotProps {
-  sequenceId: string;
+  type: HoardSequenceType;
   slotId: string;
+  slot?: FullHoardSlot;
   index: number;
   onSlotClick?: (slot: FullHoardSlot | undefined, event: React.MouseEvent) => void;
   onCountChange?: (slot: FullHoardSlot, count: number) => void;

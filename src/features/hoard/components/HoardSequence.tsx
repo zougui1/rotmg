@@ -94,7 +94,8 @@ export const HoardSequence = memo(function HoardSequence({
             <HoardSlot
               key={slot.id}
               slotId={slot.id}
-              sequenceId={sequence.id}
+              slot={sequenceProps ? slot : undefined}
+              type={sequence.type}
               index={index}
               onSlotClick={onSlotClick}
               onCountChange={onCountChange}
