@@ -127,6 +127,7 @@ export const HoardSequence = ({ sequence, onSlotClick, onCountChange, onDeleteSl
                     width={100}
                     height={100}
                     loading="lazy"
+                    quality={100}
                     className={cn(
                       'drop-shadow-[0_0_3px]',
                       'group-data-[enchant-slots="1"]:drop-shadow-green-600',
