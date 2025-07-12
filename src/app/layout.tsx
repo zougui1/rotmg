@@ -23,6 +23,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${geist.variable}`}>
+      <head>
+        <script src="https://unpkg.com/react-scan/dist/auto.global.js"></script>
+      </head>
+
       <body className="dark">
         <Header />
 

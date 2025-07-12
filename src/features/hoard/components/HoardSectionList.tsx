@@ -14,8 +14,6 @@ import { cn } from '~/utils';
 import { Button } from '~/components/ui/Button';
 import { useDialog } from '~/hooks';
 import { Tooltip } from '~/components/ui/Tooltip';
-import { ScrollArea } from '~/components/ui/ScrollArea';
-import { FullSizeWrapper } from '~/components/FullSizeWrapper';
 
 import { HoardSequence } from './HoardSequence';
 import { HoardProgress } from './HoardProgress';
