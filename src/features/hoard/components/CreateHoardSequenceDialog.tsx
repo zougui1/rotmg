@@ -10,7 +10,7 @@ export const CreateHoardSequenceDialog = ({ section, children , ...props}: Creat
   const creation = api.hoard.createSequence.useMutation();
 
   const onSubmit = async (inputSequence: Omit<FullHoardSequenceObject, 'section' | 'position'>) => {
-    const fullSection = hoardStore.getSnapshot().context.sections.find(s => s.id === section.id);
+    const fullSection = hoardStore.getSnapshot().context.maps.sections[section.id];
     const lastPosition = Math.max(0, ...fullSection?.sequences.map(s => s.position) ?? []);
 
     const sequence = {
