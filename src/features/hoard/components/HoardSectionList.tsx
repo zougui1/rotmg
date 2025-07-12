@@ -5,6 +5,7 @@ import { useSelector } from '@xstate/store/react';
 import Image from 'next/image';
 import { Plus } from 'lucide-react';
 import { useQueryState } from 'nuqs';
+import { sort } from 'radash';
 
 import { api } from '~/trpc/react';
 import { Accordion } from '~/components/ui/Accordion';
@@ -184,7 +185,7 @@ const HoardSectionItem = ({ section }: HoardSectionItemProps) => {
             </CreateHoardSequenceDialog>
           )}
 
-          {section.sequences.map(sequence => (
+          {sort(section.sequences, s => s.position, true).map(sequence => (
             <HoardSequence
               key={sequence.id}
               sequence={sequence}
@@ -286,7 +287,7 @@ export const HoardSectionList = () => {
         value={openSection ? [openSection] : []}
         onValueChange={([value]) => setOpenSection(value ?? null)}
       >
-        {sections.map(section => (
+        {sort(sections, s => s.position, true).map(section => (
           <HoardSectionItem key={section.id} section={section} />
         ))}
       </Accordion.Root>
