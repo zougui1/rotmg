@@ -10,7 +10,9 @@ export default async function Home() {
   return (
     <HydrateClient>
       <div className="h-[calc(100vh-56px-16px)] w-full flex justify-between gap-4">
-        <HoardSectionList />
+        <div>
+          <HoardSectionList />
+        </div>
         <div>
           <HoardSidePanel />
         </div>
