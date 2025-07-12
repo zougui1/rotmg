@@ -108,9 +108,7 @@ export const hoardStore = createStore({
 
     updateSlot: (context, event: { sectionId: string; slot: FullHoardSlot }) => {
       return produce(context, draft => {
-        const section = draft.sections.find(s => s.id === event.sectionId);
-        const sequence = section?.sequences.find(s => s.slots.some(slot => slot.id === event.slot.id));
-        const slot = sequence?.slots.find(s => s.id === event.slot.id);
+        const slot = draft.maps.slots[event.slot.id];
 
         if (slot) {
           slot.count = event.slot.count;
