@@ -8,7 +8,7 @@ export default async function Home() {
 
   return (
     <HydrateClient>
-      <div className="flex justify-center gap-4">
+      <div className="w-full flex justify-center gap-4">
         <CharacterList />
         <CharacterSidePanel />
       </div>

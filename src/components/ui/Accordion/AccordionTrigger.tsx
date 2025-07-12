@@ -5,9 +5,9 @@ import { ChevronDownIcon } from 'lucide-react';
 
 import { cn } from '~/utils';
 
-export const  AccordionTrigger = ({ className, children, ...props }: AccordionTriggerProps) => {
+export const  AccordionTrigger = ({ className, children, classes, ...props }: AccordionTriggerProps) => {
   return (
-    <AccordionPrimitive.Header className="flex">
+    <AccordionPrimitive.Header className={cn('flex', classes?.header)}>
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
         className={cn(
@@ -24,5 +24,5 @@ export const  AccordionTrigger = ({ className, children, ...props }: AccordionTr
 }
 
 export interface AccordionTriggerProps extends React.ComponentProps<typeof AccordionPrimitive.Trigger> {
-
+  classes?: Partial<Record<'header', string>>;
 }

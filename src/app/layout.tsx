@@ -26,7 +26,7 @@ export default function RootLayout({
       <body className="dark">
         <Header />
 
-        <div className="min-h-screen container mx-auto p-4 pt-[56px]">
+        <div className="min-h-screen container mx-auto p-4 pt-[56px] flex">
           <TRPCReactProvider>
             <NuqsAdapter>
               {children}

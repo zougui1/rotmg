@@ -13,16 +13,18 @@ import { ContextMenu } from '~/components/ui/ContextMenu';
 import { cn } from '~/utils';
 import { Button } from '~/components/ui/Button';
 import { useDialog } from '~/hooks';
+import { Tooltip } from '~/components/ui/Tooltip';
+import { ScrollArea } from '~/components/ui/ScrollArea';
+import { FullSizeWrapper } from '~/components/FullSizeWrapper';
 
 import { HoardSequence } from './HoardSequence';
+import { HoardProgress } from './HoardProgress';
 import { CreateHoardSequenceDialog } from './CreateHoardSequenceDialog';
 import { hoardStore } from '../hoard.store';
+import { useHoardFilters } from '../hooks';
 import { getHoardStats } from '../utils';
 import type { FullSection } from '../hoard.router';
 import type { FullHoardSlot } from '../hoardSequence.model';
-import { Tooltip } from '~/components/ui/Tooltip';
-import { HoardProgress } from './HoardProgress';
-import { useHoardFilters } from '../hooks';
 
 const HoardSectionSummary = ({ section }: HoardSectionSummaryProps) => {
   const sequenceCreationDialog = useDialog();
@@ -33,6 +35,7 @@ const HoardSectionSummary = ({ section }: HoardSectionSummaryProps) => {
       <ContextMenu.Root>
         <ContextMenu.Trigger asChild>
           <Accordion.Trigger
+            classes={{ header: 'sticky z-20 top-0 left-0 h-14' }}
             className={cn(
               'py-2 rounded-none bg-card text-card-foreground',
               'w-[calc(var(--vault-slot-width)*8+var(--vault-slot-gap)*9)]',
@@ -282,15 +285,22 @@ export const HoardSectionList = () => {
         'lg:[--vault-slot-width:100px]',
       )}
     >
-      <Accordion.Root
-        type="multiple"
-        value={openSection ? [openSection] : []}
-        onValueChange={values => setOpenSection(values.at(-1) ?? null)}
-      >
-        {sort(sections, s => s.position).map(section => (
-          <HoardSectionItem key={section.id} section={section} />
-        ))}
-      </Accordion.Root>
+      <FullSizeWrapper
+        render={({ height }) => (
+          <ScrollArea.Root style={{ height }} className="pr-4">
+            <Accordion.Root
+              type="multiple"
+              value={openSection ? [openSection] : []}
+              onValueChange={values => setOpenSection(values.at(-1) ?? null)}
+              className="relative"
+            >
+              {sort(sections, s => s.position).map(section => (
+                <HoardSectionItem key={section.id} section={section} />
+              ))}
+            </Accordion.Root>
+          </ScrollArea.Root>
+        )}
+      />
     </div>
   );
 }

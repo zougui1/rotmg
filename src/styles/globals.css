@@ -82,6 +82,8 @@
 
   --vault-slot-border-color: #252223;
   --vault-slot-gap: calc(var(--spacing) * 2);
+
+  --header-height: 44px;
 }
 
 .dark {

@@ -9,7 +9,9 @@ export const Header = () => {
     <header
       className={cn(
         'w-screen',
+        'h-[var(--header-height)]',
         'fixed',
+        'z-50',
         'left-0',
         'top-0',
         'shadow-md',
