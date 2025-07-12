@@ -2,9 +2,9 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 
-export const FullSizeWrapper = ({ render }: FullSizeWrapperProps) => {
+export const FullSizeWrapper = ({ render, defaultHeight }: FullSizeWrapperProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [height, setHeight] = useState<number | null>(null);
+  const [height, setHeight] = useState<number | null>(defaultHeight ?? null);
 
   useEffect(() => {
     const element = containerRef.current;
@@ -33,4 +33,5 @@ export const FullSizeWrapper = ({ render }: FullSizeWrapperProps) => {
 
 export interface FullSizeWrapperProps {
   render: (size: { height: number; }) => React.ReactNode;
+  defaultHeight?: number;
 }

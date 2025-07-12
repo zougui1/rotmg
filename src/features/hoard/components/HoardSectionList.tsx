@@ -280,27 +280,22 @@ export const HoardSectionList = () => {
     <div
       className={cn(
         'flex flex-col gap-4',
+        'h-full overflow-y-auto pr-3',
         '[--vault-slot-width:calc(var(--spacing)*16)]',
         'md:[--vault-slot-width:calc(var(--spacing)*20)]',
         'lg:[--vault-slot-width:100px]',
       )}
     >
-      <FullSizeWrapper
-        render={({ height }) => (
-          <ScrollArea.Root style={{ height }} className="pr-4">
-            <Accordion.Root
-              type="multiple"
-              value={openSection ? [openSection] : []}
-              onValueChange={values => setOpenSection(values.at(-1) ?? null)}
-              className="relative"
-            >
-              {sort(sections, s => s.position).map(section => (
-                <HoardSectionItem key={section.id} section={section} />
-              ))}
-            </Accordion.Root>
-          </ScrollArea.Root>
-        )}
-      />
+      <Accordion.Root
+        type="multiple"
+        value={openSection ? [openSection] : []}
+        onValueChange={values => setOpenSection(values.at(-1) ?? null)}
+        className="relative"
+      >
+        {sort(sections, s => s.position).map(section => (
+          <HoardSectionItem key={section.id} section={section} />
+        ))}
+      </Accordion.Root>
     </div>
   );
 }
