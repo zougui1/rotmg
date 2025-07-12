@@ -73,7 +73,7 @@ export const hoardStore = createStore({
 
     addSequence: (context, event: { sequence: FullHoardSequenceObject; }) => {
       return produce(context, draft => {
-        const section = draft.sections.find(s => s.id === event.sequence.section.id);
+        const section = draft.maps.sections[event.sequence.section.id];
 
         if (!section) {
           return;
