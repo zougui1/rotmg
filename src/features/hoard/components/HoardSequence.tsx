@@ -60,8 +60,15 @@ const getHoardRows = (sequence: Omit<FullHoardSequenceObjectWithOptionalSlots, '
   return rows;
 }
 
-export const HoardSequence = memo(function HoardSequence({ sequenceId, onSlotClick, onCountChange, onDeleteSlot }: HoardSequenceProps) {
-  const sequence = useSelector(hoardStore, state => state.context.maps.sequences[sequenceId]);
+export const HoardSequence = memo(function HoardSequence({
+  sequence: sequenceProps,
+  sequenceId,
+  onSlotClick,
+  onCountChange,
+  onDeleteSlot,
+}: HoardSequenceProps) {
+  const sequenceStore = useSelector(hoardStore, state => state.context.maps.sequences[sequenceId]);
+  const sequence = sequenceProps ?? sequenceStore;
 
   if (!sequence) {
     return null;
@@ -102,6 +109,7 @@ export const HoardSequence = memo(function HoardSequence({ sequenceId, onSlotCli
 
 export interface HoardSequenceProps {
   sequenceId: string;
+  sequence?: Omit<FullHoardSequenceObjectWithOptionalSlots, 'section' | 'position'>;
   onSlotClick?: (slot: FullHoardSlot | undefined, event: React.MouseEvent) => void;
   onCountChange?: (slot: FullHoardSlot, count: number) => void;
   onDeleteSlot?: (slot: FullHoardSlot) => void;

@@ -21,7 +21,7 @@ const sequenceTypeEnum: Record<HoardSequenceType, HoardSequenceType> = {
   Infinite: 'Infinite',
 };
 
-const emptySequence: Omit<HoardSequenceProps['sequence'], 'position'> = {
+const emptySequence: HoardSequenceProps['sequence'] = {
   id: '',
   type: sequenceTypeEnum.Repeat,
   slots: [],
@@ -40,6 +40,7 @@ const SequenceTab = ({ value, sequence, onSubmit }: SequenceTabProps) => {
     <Tabs.Content value={value}>
       <div className="flex flex-col bg-[#252223] p-[var(--vault-slot-gap)] gap-y-[var(--vault-slot-gap)]">
         <HoardSequence
+          sequenceId={sequence?.id ?? ''}
           sequence={sequence}
           onSlotClick={onSlotClick}
         />
@@ -59,7 +60,7 @@ const SequenceTab = ({ value, sequence, onSubmit }: SequenceTabProps) => {
 
 export interface SequenceTabProps {
   value: HoardSequenceType;
-  sequence: Omit<HoardSequenceProps['sequence'], 'position'>;
+  sequence: HoardSequenceProps['sequence'];
   onSubmit: (item: ItemData, slot?: FullHoardSequenceObject['slots'][number]) => void;
 }
 
@@ -71,7 +72,7 @@ export const HoardSequenceFormDialog = ({
   onSubmit,
   ...props
 }: HoardSequenceFormDialogProps) => {
-  const [sequence, setSequence] = useState<Omit<HoardSequenceProps['sequence'], 'position'> | undefined>();
+  const [sequence, setSequence] = useState<HoardSequenceProps['sequence'] | undefined>();
   const sequenceValue = sequence ?? {
     ...emptySequence,
     ...defaultValues,
