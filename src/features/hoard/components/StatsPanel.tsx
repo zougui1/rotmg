@@ -10,8 +10,8 @@ import { hoardStore } from '../hoard.store';
 import { getHoardStats } from '../utils';
 
 export const StatsPanel = () => {
-  const sections = useSelector(hoardStore, state => state.context.sections);
-  const stats = getHoardStats(sections);
+  const sections = useSelector(hoardStore, state => state.context.maps.sections);
+  const stats = getHoardStats(Object.values(sections));
 
   return (
     <div className="space-y-0.5">

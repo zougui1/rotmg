@@ -108,12 +108,32 @@ export const hoardStore = createStore({
 
     updateSlot: (context, event: { sectionId: string; slot: FullHoardSlot }) => {
       return produce(context, draft => {
+        const section = draft.maps.sections[event.sectionId];
         const slot = draft.maps.slots[event.slot.id];
 
         if (slot) {
           slot.count = event.slot.count;
           slot.enchantSlots = event.slot.enchantSlots;
           draft.maps.slots[slot.id] = slot;
+
+          if (section) {
+            for (const sequence of section.sequences) {
+              for (const sequenceSlot of sequence.slots) {
+                if (sequenceSlot.id === slot.id) {
+                  sequenceSlot.count = slot.count;
+                  sequenceSlot.enchantSlots = slot.enchantSlots;
+
+                  const mappedSequence = draft.maps.sequences[sequence.id];
+
+                  if (mappedSequence) {
+                    mappedSequence.slots = sequence.slots;
+                  }
+
+                  return;
+                }
+              }
+            }
+          }
         }
       });
     },

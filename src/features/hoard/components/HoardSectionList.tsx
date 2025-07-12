@@ -217,12 +217,12 @@ interface HoardSectionItemProps {
 const useSections = () => {
   const mounted = useRef(false);
   const [serverSections] = api.hoard.getSections.useSuspenseQuery();
-  const clientSections = useSelector(hoardStore, state => state.context.sections);
+  const clientSections = useSelector(hoardStore, state => state.context.maps.sections);
   const filters = useHoardFilters();
   const search = filters.search.value.toLowerCase();
 
   const allSections = mounted.current
-    ? clientSections
+    ? Object.values(clientSections)
     : serverSections;
 
   useEffect(() => {
