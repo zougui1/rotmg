@@ -14,5 +14,6 @@ export const useWindowEvent = <K extends keyof WindowEventMap>(
     return () => {
       window.removeEventListener(type, listenerRef.current);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type, ...dependencies]);
 }

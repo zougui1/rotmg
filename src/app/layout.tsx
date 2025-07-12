@@ -6,6 +6,7 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
 import { TRPCReactProvider } from '~/trpc/react';
 import { Header } from '~/components/Header';
+import { env } from '~/env';
 
 export const metadata: Metadata = {
   title: 'Create T3 App',
@@ -24,7 +25,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geist.variable}`}>
       <head>
-        <script src="https://unpkg.com/react-scan/dist/auto.global.js"></script>
+        {env.NODE_ENV === 'development' && (
+          // eslint-disable-next-line @next/next/no-sync-scripts
+          <script src="https://unpkg.com/react-scan/dist/auto.global.js"></script>
+        )}
       </head>
 
       <body className="dark">
