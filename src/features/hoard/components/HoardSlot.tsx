@@ -72,7 +72,8 @@ export const HoardSlot = memo(function HoardSlot({
           data-filled={slot.count > 0 ? 'true' : undefined}
           className={cn(
             'group',
-            'shadow-[inset_0_0_5px_3px] shadow-black/20'
+            'shadow-[inset_0_0_5px_3px] shadow-black/20',
+            slot.item.shiny && 'border border-pink-400',
           )}
           classes={{ wrapper: 'bg-[#474747] relative' }}
           onClick={(e) => onSlotClick?.(slot, e)}
