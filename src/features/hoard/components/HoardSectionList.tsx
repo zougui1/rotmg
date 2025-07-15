@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useEffect, useRef, useCallback } from 'react';
+import { memo, useRef, useCallback, useMemo } from 'react';
 import { useSelector } from '@xstate/store/react';
 import Image from 'next/image';
 import { Plus } from 'lucide-react';
@@ -126,7 +126,7 @@ interface HoardSectionSummaryProps {
   sectionId: string;
 }
 
-const HoardSectionItem = memo(function HoardSectionItem({ sectionId }: HoardSectionItemProps) {
+const HoardSectionItem = memo(function HoardSectionItem({ sectionId, sequenceIds }: HoardSectionItemProps) {
   const { mutateAsync: mutatateSlot } = api.hoard.updateSlot.useMutation();
   const section = useSelector(hoardStore, state => state.context.maps.sections[sectionId]);
 
@@ -196,10 +196,10 @@ const HoardSectionItem = memo(function HoardSectionItem({ sectionId }: HoardSect
             </CreateHoardSequenceDialog>
           )}
 
-          {sort(section.sequences, s => s.position).map(sequence => (
+          {sequenceIds.map(sequenceId => (
             <HoardSequence
-              key={sequence.id}
-              sequenceId={sequence.id}
+              key={sequenceId}
+              sequenceId={sequenceId}
               onSlotClick={onSlotClick}
               onDeleteSlot={onDeleteSlot}
             />
@@ -212,6 +212,7 @@ const HoardSectionItem = memo(function HoardSectionItem({ sectionId }: HoardSect
 
 interface HoardSectionItemProps {
   sectionId: string;
+  sequenceIds: string[];
 }
 
 const useSections = () => {
@@ -219,65 +220,69 @@ const useSections = () => {
   const [serverSections] = api.hoard.getSections.useSuspenseQuery();
   const clientSections = useSelector(hoardStore, state => state.context.maps.sections);
   const filters = useHoardFilters();
-  const search = filters.search.value.toLowerCase();
 
   const allSections = mounted.current
     ? Object.values(clientSections)
     : serverSections;
 
-  useEffect(() => {
+  if (!mounted.current) {
     mounted.current = true;
     hoardStore.trigger.init({ sections: serverSections });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  if (filters.isDefault) {
-    return allSections;
   }
 
-  const sections = allSections.map(section => {
-    const sequences = section.sequences.map(sequence => {
-      const slots = sequence.slots.filter(slot => {
-        return (
-          (
-            !search ||
-            slot.item.name.toLowerCase().includes(search)
-          ) &&
-          (
-            !['ST', 'UT'].includes(filters.tier.value ?? '') ||
-            slot.item.tier === filters.tier.value
-          ) &&
-          (!filters.shiniesOnly.value || slot.item.shiny)
-        );
-      });
+  return useMemo(() => {
+    const search = filters.search.value.toLowerCase();
 
-      if (slots.length) {
+    const sections = allSections.map(section => {
+      const sequences = section.sequences.map(sequence => {
+        const slots = sequence.slots.filter(slot => {
+          return (
+            (
+              !search ||
+              slot.item.name.toLowerCase().includes(search)
+            ) &&
+            (
+              !['ST', 'UT'].includes(filters.tier.value ?? '') ||
+              slot.item.tier === filters.tier.value
+            ) &&
+            (!filters.shiniesOnly.value || slot.item.shiny) &&
+            (!filters.divinesOnly.value || (slot.count && slot.enchantSlots && slot.enchantSlots >= 4))
+          );
+        });
+
         return {
           ...sequence,
           slots,
         };
-      }
-    }).filter(s => !!s).filter(sequence => {
-      if (filters.rowProgress.value === 'complete') {
-        return sequence.slots.every(s => s.count > 0);
-      }
+      }).filter(sequence => {
+        if (!sequence.slots.length) {
+          return;
+        }
 
-      if (filters.rowProgress.value === 'incomplete') {
-        return sequence.slots.some(s => s.count <= 0);
-      }
+        if (filters.rowProgress.value === 'complete') {
+          return sequence.slots.every(s => s.count > 0);
+        }
 
-      return true;
-    });
+        if (filters.rowProgress.value === 'incomplete') {
+          return sequence.slots.some(s => s.count <= 0);
+        }
 
-    if (sequences.length) {
+        return true;
+      });
+
       return {
         ...section,
         sequences,
       };
-    }
-  }).filter(s => !!s);
+    }).filter(s => s.sequences.length).map(section => {
+      return {
+        ...section,
+        sequenceIds: sort(section.sequences, s => s.position).map(s => s.id),
+      };
+    });
 
-  return sections;
+    return sort(sections, s => s.position);
+  }, [filters, allSections]);
 }
 
 export const HoardSectionList = () => {
@@ -300,8 +305,12 @@ export const HoardSectionList = () => {
         onValueChange={values => setOpenSection(values.at(-1) ?? null)}
         className="relative"
       >
-        {sort(sections, s => s.position).map(section => (
-          <HoardSectionItem key={section.id} sectionId={section.id} />
+        {sections.map(section => (
+          <HoardSectionItem
+            key={section.id}
+            sectionId={section.id}
+            sequenceIds={section.sequenceIds}
+          />
         ))}
       </Accordion.Root>
     </div>

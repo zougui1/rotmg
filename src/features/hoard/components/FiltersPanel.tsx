@@ -81,6 +81,15 @@ export const FiltersPanel = () => {
         />
         <Label htmlFor="shiniesOnly">Shinies only</Label>
       </div>
+
+      <div className="flex items-center gap-2">
+        <Switch
+          id="divinesOnly"
+          checked={filters.divinesOnly.value}
+          onCheckedChange={filters.divinesOnly.setValue}
+        />
+        <Label htmlFor="divinesOnly">Divines only</Label>
+      </div>
     </div>
   );
 }

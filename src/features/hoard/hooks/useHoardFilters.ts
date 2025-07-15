@@ -1,6 +1,7 @@
 'use client';
 
 import { useQueryState, parseAsBoolean, parseAsStringEnum } from 'nuqs';
+import { useMemo } from 'react';
 
 const useQueryEnum = <T extends string>(
   key: string,
@@ -38,23 +39,41 @@ export const useHoardFilters = () => {
     'shiniesOnly',
     parseAsBoolean.withDefault(false),
   );
+  const [divinesOnly, setDivinesOnly] = useQueryState(
+    'divinesOnly',
+    parseAsBoolean.withDefault(false),
+  );
 
-  return {
-    isDefault: (
-      search === '' &&
-      rowProgress.value === 'all' &&
-      tier.value === 'all' &&
-      !shiniesOnly
-    ),
-    rowProgress,
-    tier,
-    search: {
-      value: search,
-      setValue: setSearch,
-    },
-    shiniesOnly: {
-      value: shiniesOnly,
-      setValue: setShiniesOnly,
-    },
-  };
+  return useMemo(() => {
+    return {
+      isDefault: (
+        search === '' &&
+        rowProgress.value === 'all' &&
+        tier.value === 'all' &&
+        !shiniesOnly &&
+        !divinesOnly
+      ),
+      rowProgress,
+      tier,
+      search: {
+        value: search,
+        setValue: setSearch,
+      },
+      shiniesOnly: {
+        value: shiniesOnly,
+        setValue: setShiniesOnly,
+      },
+      divinesOnly: {
+        value: divinesOnly,
+        setValue: setDivinesOnly,
+      },
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    search,
+    rowProgress.value,
+    tier.value,
+    shiniesOnly,
+    divinesOnly,
+  ]);
 }
