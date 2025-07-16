@@ -32,7 +32,6 @@ const SequenceTab = ({ value, sequence, onSubmit }: SequenceTabProps) => {
   const itemDialog = useDialog();
 
   const onSlotClick: HoardSequenceProps['onSlotClick'] = slot => {
-    console.log('slot click', slot)
     clickedRef.current = slot;
     itemDialog.open();
   }

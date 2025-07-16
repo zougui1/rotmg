@@ -22,7 +22,6 @@ export const HoardSequences = memo(function HoardSequences({
   }, [visibleCount, sequenceIds]);
 
   const clamped = Math.min(sequenceIds.length, Math.max(6, visibleCount));
-  console.log(clamped)
 
   return (
     <>
