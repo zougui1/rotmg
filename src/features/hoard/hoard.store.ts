@@ -165,5 +165,17 @@ export const hoardStore = createStore({
         }
       });
     },
+
+    moveSections: (context, event: { sectionIds: string[]; }) => {
+      return produce(context, draft => {
+        event.sectionIds.forEach((sectionId, index) => {
+          const draftSection = draft.maps.sections[sectionId];
+
+          if (draftSection) {
+            draftSection.position = index;
+          }
+        });
+      });
+    },
   },
 });

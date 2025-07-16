@@ -2,8 +2,8 @@
 
 import { memo } from 'react';
 import { useSelector } from '@xstate/store/react';
-import { useSortable } from '@dnd-kit/sortable';
 
+import { SortableList } from '~/components/ui/SortableList';
 import { chunkArray, cn } from '~/utils';
 
 import { VaultSlot } from './VaultSlot';
@@ -15,7 +15,6 @@ import type {
   FullHoardSlot,
 } from '../hoardSequence.model';
 import { hoardStore } from '../hoard.store';
-import { CSS } from '@dnd-kit/utilities';
 
 const getHoardRows = (sequence: Omit<FullHoardSequenceObjectWithOptionalSlots, 'section' | 'position'>) => {
   // ensure all rows have exactly a length of 8
@@ -69,13 +68,6 @@ export const HoardSequence = memo(function HoardSequence({
   onCountChange,
   onDeleteSlot,
 }: HoardSequenceProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-  } = useSortable({ id: sequenceId });
   const sequenceStore = useSelector(hoardStore, state => state.context.maps.sequences[sequenceId]);
   const sequence = sequenceProps ?? sequenceStore;
 
@@ -86,15 +78,7 @@ export const HoardSequence = memo(function HoardSequence({
   const rows = getHoardRows(sequence);
 
   return (
-    <div
-      ref={setNodeRef}
-      style={{
-        transition,
-        transform: CSS.Transform.toString(transform),
-      }}
-      {...attributes}
-      {...listeners}
-    >
+    <SortableList.Item id={sequence.id}>
       {rows.map((slots, rowIndex) => (
         <div
           key={rowIndex}
@@ -121,7 +105,7 @@ export const HoardSequence = memo(function HoardSequence({
           ))}
         </div>
       ))}
-    </div>
+    </SortableList.Item>
   );
 });
 

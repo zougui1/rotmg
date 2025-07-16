@@ -20,8 +20,10 @@ import { HoardProgress } from './HoardProgress';
 import { CreateHoardSequenceDialog } from './CreateHoardSequenceDialog';
 import { hoardStore } from '../hoard.store';
 import { useHoardFilters } from '../hooks';
-import { getHoardStats } from '../utils';
+import { getHoardStats, movePositionedItem } from '../utils';
 import type { FullHoardSlot } from '../hoardSequence.model';
+import { SortableList } from '~/components/ui/SortableList';
+import type { DragEndEvent } from '@dnd-kit/core';
 
 const HoardSectionSummary = ({ sectionId }: HoardSectionSummaryProps) => {
   const section = useSelector(hoardStore, state => state.context.maps.sections[sectionId]);
@@ -174,36 +176,38 @@ const HoardSectionItem = memo(function HoardSectionItem({ sectionId, sequenceIds
   }
 
   return (
-    <Accordion.Item value={section.name}>
-      <HoardSectionSummary sectionId={sectionId} />
+    <SortableList.Item id={section.id}>
+      <Accordion.Item value={section.name}>
+        <HoardSectionSummary sectionId={sectionId} />
 
-      <Accordion.Content>
-        <div
-          className={cn(
-            'flex flex-col bg-[#252223] p-[var(--vault-slot-gap)] gap-y-[var(--vault-slot-gap)]',
-          )}
-        >
-          {!section.sequences.length && (
-            <CreateHoardSequenceDialog section={section}>
-              <Button
-                icon
-                variant="flat"
-                size="lg"
-                className="mx-auto"
-              >
-                <Plus className="size-8" />
-              </Button>
-            </CreateHoardSequenceDialog>
-          )}
+        <Accordion.Content>
+          <div
+            className={cn(
+              'flex flex-col bg-[#252223] p-[var(--vault-slot-gap)] gap-y-[var(--vault-slot-gap)]',
+            )}
+          >
+            {!section.sequences.length && (
+              <CreateHoardSequenceDialog section={section}>
+                <Button
+                  icon
+                  variant="flat"
+                  size="lg"
+                  className="mx-auto"
+                >
+                  <Plus className="size-8" />
+                </Button>
+              </CreateHoardSequenceDialog>
+            )}
 
-          <HoardSequenceList
-            sequenceIds={sequenceIds}
-            onSlotClick={onSlotClick}
-            onDeleteSlot={onDeleteSlot}
-          />
-        </div>
-      </Accordion.Content>
-    </Accordion.Item>
+            <HoardSequenceList
+              sequenceIds={sequenceIds}
+              onSlotClick={onSlotClick}
+              onDeleteSlot={onDeleteSlot}
+            />
+          </div>
+        </Accordion.Content>
+      </Accordion.Item>
+    </SortableList.Item>
   );
 });
 
@@ -286,10 +290,37 @@ export const HoardSectionList = () => {
   const mounted = useRef(false);
   const sections = useSections();
   const [openSection, setOpenSection] = useQueryState('section');
+  const moveSectionsMutations = api.hoard.moveSections.useMutation();
 
   useEffect(() => {
     mounted.current = true;
   }, []);
+
+  const handleDragEnd = ({ active, over }: DragEndEvent) => {
+    if (!over) {
+      return;
+    }
+
+    const { sections } = hoardStore.getSnapshot().context.maps;
+    const activeSection = sections[active.id];
+    const overSequence = sections[over.id];
+
+    if (!activeSection || !overSequence) {
+      return;
+    }
+
+    const reorderedSections = movePositionedItem(Object.values(sections), activeSection, overSequence)
+
+    hoardStore.trigger.moveSections({
+      sectionIds: reorderedSections.map(s => s.id),
+    });
+    moveSectionsMutations.mutate({
+      sections: reorderedSections.map(s => ({
+        id: s.id,
+        position: s.position,
+      })),
+    });
+  }
 
   return (
     <div
@@ -301,20 +332,25 @@ export const HoardSectionList = () => {
         'lg:[--vault-slot-width:100px]',
       )}
     >
-      <Accordion.Root
-        type="multiple"
-        value={openSection ? [openSection] : []}
-        onValueChange={values => setOpenSection(values.at(-1) ?? null)}
-        className="relative"
+      <SortableList.Root
+        items={sections}
+        onDragEnd={handleDragEnd}
       >
-        {sections.map(section => (
-          <HoardSectionItem
-            key={section.id}
-            sectionId={section.id}
-            sequenceIds={section.sequenceIds}
-          />
-        ))}
-      </Accordion.Root>
+        <Accordion.Root
+          type="multiple"
+          value={openSection ? [openSection] : []}
+          onValueChange={values => setOpenSection(values.at(-1) ?? null)}
+          className="relative"
+        >
+          {sections.map(section => (
+            <HoardSectionItem
+              key={section.id}
+              sectionId={section.id}
+              sequenceIds={section.sequenceIds}
+            />
+          ))}
+        </Accordion.Root>
+      </SortableList.Root>
     </div>
   );
 }

@@ -1,40 +1,18 @@
-import { memo, useMemo } from 'react';
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-} from '@dnd-kit/core';
-import {
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
+import { memo } from 'react';
+import { type DragEndEvent } from '@dnd-kit/core';
 
 import { HoardSequence, type HoardSequenceProps } from './HoardSequence';
 import { hoardStore } from '../hoard.store';
 import { movePositionedItem } from '../utils';
 import { api } from '~/trpc/react';
+import { SortableList } from '~/components/ui/SortableList';
 
 export const HoardSequenceList = memo(function HoardSequenceList({
   sequenceIds,
   onSlotClick,
   onDeleteSlot,
 }: HoardSequenceListProps) {
-  const updateSequencesMutation = api.hoard.uopdateSequence.useMutation();
-  const sequences = useMemo(() => {
-    return sequenceIds.map(id => ({ id }));
-  }, [sequenceIds]);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
+  const moveSequencesMutations = api.hoard.moveSequences.useMutation();
 
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     if (!over) {
@@ -55,7 +33,7 @@ export const HoardSequenceList = memo(function HoardSequenceList({
     hoardStore.trigger.moveSequences({
       sequenceIds: reorderedSequences.map(s => s.id),
     });
-    updateSequencesMutation.mutate({
+    moveSequencesMutations.mutate({
       sequences: reorderedSequences.map(s => ({
         id: s.id,
         position: s.position,
@@ -64,25 +42,19 @@ export const HoardSequenceList = memo(function HoardSequenceList({
   }
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
+    <SortableList.Root
+      items={sequenceIds}
       onDragEnd={handleDragEnd}
     >
-      <SortableContext
-        items={sequences}
-        strategy={verticalListSortingStrategy}
-      >
-        {sequenceIds.map(sequenceId => (
-          <HoardSequence
-            key={sequenceId}
-            sequenceId={sequenceId}
-            onSlotClick={onSlotClick}
-            onDeleteSlot={onDeleteSlot}
-          />
-        ))}
-      </SortableContext>
-    </DndContext>
+      {sequenceIds.map(sequenceId => (
+        <HoardSequence
+          key={sequenceId}
+          sequenceId={sequenceId}
+          onSlotClick={onSlotClick}
+          onDeleteSlot={onDeleteSlot}
+        />
+      ))}
+    </SortableList.Root>
   );
 });
 

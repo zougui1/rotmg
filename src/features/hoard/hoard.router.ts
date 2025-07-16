@@ -141,7 +141,7 @@ export const hoardRouter = createTRPCRouter({
       );
     }),
 
-  uopdateSequence: publicProcedure
+  moveSequences: publicProcedure
     .input(z.object({
       sequences: z.array(z.object({
         id: z.string(),
@@ -154,6 +154,24 @@ export const hoardRouter = createTRPCRouter({
           updateOne: {
             filter: { id: sequence.id },
             update: { $set: { position: sequence.position } },
+          },
+        };
+      }));
+    }),
+
+  moveSections: publicProcedure
+    .input(z.object({
+      sections: z.array(z.object({
+        id: z.string(),
+        position: z.number(),
+      })),
+    }))
+    .mutation(async ({ input }) => {
+      await HoardSection.bulkWrite(input.sections.map(section => {
+        return {
+          updateOne: {
+            filter: { id: section.id },
+            update: { $set: { position: section.position } },
           },
         };
       }));
