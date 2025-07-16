@@ -24,13 +24,21 @@ import { getHoardStats, movePositionedItem } from '../utils';
 import type { FullHoardSlot } from '../hoardSequence.model';
 import { SortableList } from '~/components/ui/SortableList';
 import type { DragEndEvent } from '@dnd-kit/core';
+import { ConfirmDeletionDialog } from '~/components/ConfirmDeletionDialog';
 
 const HoardSectionSummary = ({ sectionId }: HoardSectionSummaryProps) => {
+  const deleteSectionMutation = api.hoard.deleteSection.useMutation();
   const section = useSelector(hoardStore, state => state.context.maps.sections[sectionId]);
   const sequenceCreationDialog = useDialog();
+  const deleteSectionDialog = useDialog();
 
   if(!section) {
     return null;
+  }
+
+  const deleteSection = () => {
+    hoardStore.trigger.deleteSection({ id: section.id });
+    deleteSectionMutation.mutate({ id: section.id });
   }
 
   const stats = getHoardStats([section]);
@@ -114,12 +122,28 @@ const HoardSectionSummary = ({ sectionId }: HoardSectionSummaryProps) => {
           <ContextMenu.Item onClick={sequenceCreationDialog.open}>
             New Items
           </ContextMenu.Item>
+
+          <ContextMenu.Separator />
+
+          <ContextMenu.Item
+            onClick={deleteSectionDialog.open}
+            variant="destructive"
+          >
+            Delete Section
+          </ContextMenu.Item>
         </ContextMenu.Content>
       </ContextMenu.Root>
 
       <sequenceCreationDialog.Outlet>
         <CreateHoardSequenceDialog section={section} />
       </sequenceCreationDialog.Outlet>
+
+      <deleteSectionDialog.Outlet>
+        <ConfirmDeletionDialog.Root
+          label={section.name}
+          onDelete={deleteSection}
+        />
+      </deleteSectionDialog.Outlet>
     </>
   );
 }

@@ -176,4 +176,19 @@ export const hoardRouter = createTRPCRouter({
         };
       }));
     }),
+
+  deleteSection: publicProcedure
+    .input(z.object({
+      id: z.string(),
+    }))
+    .mutation(async ({ input }) => {
+      const sequences = await HoardSequence.find({ 'section.id': input.id });
+      const itemIds = sequences.flatMap(sequence => sequence.slots.flatMap(slot => slot.item.id));
+
+      await Promise.allSettled([
+        Item.deleteMany({ id: { $in: unique(itemIds) } }),
+        HoardSection.deleteOne({ id: input.id }),
+        HoardSequence.deleteMany({ 'section.id': input.id }),
+      ]);
+    }),
 });
