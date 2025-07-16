@@ -32,6 +32,7 @@ const SequenceTab = ({ value, sequence, onSubmit }: SequenceTabProps) => {
   const itemDialog = useDialog();
 
   const onSlotClick: HoardSequenceProps['onSlotClick'] = slot => {
+    console.log('slot click', slot)
     clickedRef.current = slot;
     itemDialog.open();
   }
@@ -112,6 +113,11 @@ export const HoardSequenceFormDialog = ({
           id: nanoid(),
         };
         return;
+      }
+
+      // the first slot of new rows is undefined
+      if (!draft.slots.at(-1)) {
+        draft.slots.pop();
       }
 
       draft.slots.push({

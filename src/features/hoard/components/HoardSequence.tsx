@@ -78,16 +78,16 @@ export const HoardSequence = memo(function HoardSequence({
 
   return (
     <>
-      {rows.map((slots, index) => (
+      {rows.map((slots, rowIndex) => (
         <div
-          key={index}
+          key={rowIndex}
           className={cn(
             'flex gap-[var(--vault-slot-gap)] box-border',
           )}
         >
-          {slots.map((slot, index) => !slot ? (
+          {slots.map((slot, slotIndex) => !slot ? (
             <VaultSlot
-              key={index}
+              key={slotIndex}
               onClick={(e) => onSlotClick?.(undefined, e)}
             />
            ) : (
@@ -96,7 +96,7 @@ export const HoardSequence = memo(function HoardSequence({
               slotId={slot.id}
               slot={sequenceProps ? slot : undefined}
               type={sequence.type}
-              index={index}
+              index={(rowIndex * 8) + slotIndex}
               onSlotClick={onSlotClick}
               onCountChange={onCountChange}
               onDeleteSlot={onDeleteSlot}
