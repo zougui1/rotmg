@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useRef, useCallback, useMemo } from 'react';
+import { memo, useRef, useCallback, useMemo, useEffect } from 'react';
 import { useSelector } from '@xstate/store/react';
 import Image from 'next/image';
 import { Plus } from 'lucide-react';
@@ -15,7 +15,7 @@ import { Button } from '~/components/ui/Button';
 import { useDialog } from '~/hooks';
 import { Tooltip } from '~/components/ui/Tooltip';
 
-import { HoardSequence } from './HoardSequence';
+import { HoardSequenceList } from './HoardSequenceList';
 import { HoardProgress } from './HoardProgress';
 import { CreateHoardSequenceDialog } from './CreateHoardSequenceDialog';
 import { hoardStore } from '../hoard.store';
@@ -196,14 +196,11 @@ const HoardSectionItem = memo(function HoardSectionItem({ sectionId, sequenceIds
             </CreateHoardSequenceDialog>
           )}
 
-          {sequenceIds.map(sequenceId => (
-            <HoardSequence
-              key={sequenceId}
-              sequenceId={sequenceId}
-              onSlotClick={onSlotClick}
-              onDeleteSlot={onDeleteSlot}
-            />
-          ))}
+          <HoardSequenceList
+            sequenceIds={sequenceIds}
+            onSlotClick={onSlotClick}
+            onDeleteSlot={onDeleteSlot}
+          />
         </div>
       </Accordion.Content>
     </Accordion.Item>
@@ -286,8 +283,13 @@ const useSections = () => {
 }
 
 export const HoardSectionList = () => {
+  const mounted = useRef(false);
   const sections = useSections();
   const [openSection, setOpenSection] = useQueryState('section');
+
+  useEffect(() => {
+    mounted.current = true;
+  }, []);
 
   return (
     <div

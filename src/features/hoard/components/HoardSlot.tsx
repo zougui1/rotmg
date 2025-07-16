@@ -60,7 +60,11 @@ export const HoardSlot = memo(function HoardSlot({
 
   if (!mounted.current) {
     mounted.current = true;
-    requestIdleCallback(() => setShouldRenderTooltip(true));
+
+    // requestIdleCallback does not exist in node
+    if (typeof window === 'object') {
+      //requestIdleCallback(() => setShouldRenderTooltip(true));
+    }
   }
 
   const isNumbered = type === 'Numbered';

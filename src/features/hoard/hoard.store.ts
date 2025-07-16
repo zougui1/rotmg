@@ -137,5 +137,33 @@ export const hoardStore = createStore({
         }
       });
     },
+
+    moveSequences: (context, event: { sequenceIds: string[]; }) => {
+      const [firstSequenceId] = event.sequenceIds;
+      const firstSequence = firstSequenceId ? context.maps.sequences[firstSequenceId] : null;
+      const sectionId = firstSequence?.section.id;
+
+      return produce(context, draft => {
+        const draftSection = sectionId && draft.maps.sections[sectionId];
+
+        event.sequenceIds.forEach((sequenceId, index) => {
+          const draftSequence = draft.maps.sequences[sequenceId];
+
+          if (draftSequence) {
+            draftSequence.position = index;
+          }
+        });
+
+        if (draftSection) {
+          for (const draftSequence of draftSection.sequences) {
+            const mappedSequence = draft.maps.sequences[draftSequence.id];
+
+            if (mappedSequence) {
+              draftSequence.position = mappedSequence.position;
+            }
+          }
+        }
+      });
+    },
   },
 });

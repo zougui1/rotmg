@@ -140,4 +140,22 @@ export const hoardRouter = createTRPCRouter({
         },
       );
     }),
+
+  uopdateSequence: publicProcedure
+    .input(z.object({
+      sequences: z.array(z.object({
+        id: z.string(),
+        position: z.number(),
+      })),
+    }))
+    .mutation(async ({ input }) => {
+      await HoardSequence.bulkWrite(input.sequences.map(sequence => {
+        return {
+          updateOne: {
+            filter: { id: sequence.id },
+            update: { $set: { position: sequence.position } },
+          },
+        };
+      }));
+    }),
 });
