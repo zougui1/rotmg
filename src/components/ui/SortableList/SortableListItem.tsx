@@ -1,6 +1,5 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-
 import { cn } from '~/utils';
 
 export const SortableListItem = ({ id, children }: SortableListItemProps) => {
@@ -10,6 +9,7 @@ export const SortableListItem = ({ id, children }: SortableListItemProps) => {
     setNodeRef,
     transform,
     transition,
+    active,
   } = useSortable({ id });
 
   return (
@@ -19,6 +19,7 @@ export const SortableListItem = ({ id, children }: SortableListItemProps) => {
         transition,
         transform: CSS.Transform.toString(transform),
       }}
+      className={cn(active?.id === id && 'relative z-10')}
       {...attributes}
       {...listeners}
     >
