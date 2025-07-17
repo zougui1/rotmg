@@ -63,7 +63,7 @@ export const HoardSlot = memo(function HoardSlot({
 
     // requestIdleCallback does not exist in node
     if (typeof window === 'object') {
-      //requestIdleCallback(() => setShouldRenderTooltip(true));
+      requestIdleCallback(() => setShouldRenderTooltip(true));
     }
   }
 
