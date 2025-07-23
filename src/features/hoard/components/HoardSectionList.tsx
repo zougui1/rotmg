@@ -25,6 +25,7 @@ import type { FullHoardSlot } from '../hoardSequence.model';
 import { SortableList } from '~/components/ui/SortableList';
 import type { DragEndEvent } from '@dnd-kit/core';
 import { ConfirmDeletionDialog } from '~/components/ConfirmDeletionDialog';
+import type { FullSection } from '../hoard.router';
 
 const HoardSectionSummary = ({ sectionId }: HoardSectionSummaryProps) => {
   const deleteSectionMutation = api.hoard.deleteSection.useMutation();
@@ -240,6 +241,53 @@ interface HoardSectionItemProps {
   sequenceIds: string[];
 }
 
+const filterSections = (allSections: FullSection[], filters: ReturnType<typeof useHoardFilters>) => {
+  const search = filters.search.value.toLowerCase();
+
+  return allSections.map(section => {
+    const sequences = section.sequences.map(sequence => {
+      const slots = sequence.slots.filter(slot => {
+        return (
+          (
+            !search ||
+            slot.item.name.toLowerCase().includes(search)
+          ) &&
+          (
+            !['ST', 'UT'].includes(filters.tier.value ?? '') ||
+            slot.item.tier === filters.tier.value
+          ) &&
+          (!filters.shiniesOnly.value || slot.item.shiny) &&
+          (!filters.divinesOnly.value || (slot.count && slot.enchantSlots && slot.enchantSlots >= 4))
+        );
+      });
+
+      return {
+        ...sequence,
+        slots,
+      };
+    }).filter(sequence => {
+      if (!sequence.slots.length) {
+        return;
+      }
+
+      if (filters.rowProgress.value === 'complete') {
+        return sequence.slots.every(s => s.count > 0);
+      }
+
+      if (filters.rowProgress.value === 'incomplete') {
+        return sequence.slots.some(s => s.count <= 0);
+      }
+
+      return true;
+    });
+
+    return {
+      ...section,
+      sequences,
+    };
+  }).filter(s => s.sequences.length);
+}
+
 const useSections = () => {
   const mounted = useRef(false);
   const [serverSections] = api.hoard.getSections.useSuspenseQuery();
@@ -256,50 +304,11 @@ const useSections = () => {
   }
 
   return useMemo(() => {
-    const search = filters.search.value.toLowerCase();
+    const filteredSections = filters.isDefault
+      ? allSections
+      : filterSections(allSections, filters);
 
-    const sections = allSections.map(section => {
-      const sequences = section.sequences.map(sequence => {
-        const slots = sequence.slots.filter(slot => {
-          return (
-            (
-              !search ||
-              slot.item.name.toLowerCase().includes(search)
-            ) &&
-            (
-              !['ST', 'UT'].includes(filters.tier.value ?? '') ||
-              slot.item.tier === filters.tier.value
-            ) &&
-            (!filters.shiniesOnly.value || slot.item.shiny) &&
-            (!filters.divinesOnly.value || (slot.count && slot.enchantSlots && slot.enchantSlots >= 4))
-          );
-        });
-
-        return {
-          ...sequence,
-          slots,
-        };
-      }).filter(sequence => {
-        if (!sequence.slots.length) {
-          return;
-        }
-
-        if (filters.rowProgress.value === 'complete') {
-          return sequence.slots.every(s => s.count > 0);
-        }
-
-        if (filters.rowProgress.value === 'incomplete') {
-          return sequence.slots.some(s => s.count <= 0);
-        }
-
-        return true;
-      });
-
-      return {
-        ...section,
-        sequences,
-      };
-    }).filter(s => s.sequences.length).map(section => {
+    const sections = filteredSections.map(section => {
       return {
         ...section,
         sequenceIds: sort(section.sequences, s => s.position).map(s => s.id),
